@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.logo{
+ 
+  font-family: "Style Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(50, 166, 39);
+}
