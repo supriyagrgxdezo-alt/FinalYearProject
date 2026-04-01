@@ -65,8 +65,8 @@ class PaymentService {
       product_code: productCode,
       product_service_charge: "0",
       product_delivery_charge: "0",
-      success_url: `${BACKEND_URL}/api/payment/esewa/success`, // ✅ backend
-      failure_url: `${BACKEND_URL}/api/payment/esewa/failure`, // ✅ backend (no query params needed)
+      success_url: `${FRONTEND_URL}/payment/success`, // ✅ backend
+      failure_url: `${FRONTEND_URL}/payment/failed`, // ✅ backend (no query params needed)
       signed_field_names: "total_amount,transaction_uuid,product_code",
       signature,
     };

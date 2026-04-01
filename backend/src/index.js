@@ -7,11 +7,12 @@ const cors = require("cors");
 const app = express();
 const port = 8081;
 
-app.use(cors())
+app.use(cors({ origin: ["http://localhost:5173", "https://conducibly-deteriorative-janee.ngrok-free.dev"], credentials: true }))
 
 
 // middleware
 app.use(bodyParser.json());
+app.use((req, res, next) => { res.setHeader("ngrok-skip-browser-warning", "true"); next(); });
 
 // routes
 const adminRoutes = require("./routers/AdminRoutes.js");
@@ -70,7 +71,7 @@ app.use("/api/addresses", addressRoutes);
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(port, "127.0.0.1", () => {
+    app.listen(port, "0.0.0.0", () => {
       console.log(`Server running on http://127.0.0.1:${port}`);
     });
 

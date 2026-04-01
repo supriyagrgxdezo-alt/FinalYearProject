@@ -14,20 +14,16 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("=== PAYMENT PAGE LOADED ===");
-    console.log("Full URL:", window.location.href);
-    console.log("Search params:", Object.fromEntries(searchParams));
-
     const esewaData = searchParams.get("data");
     const pidx = searchParams.get("pidx");
     const khaltiStatus = searchParams.get("status");
 
-    // --- eSewa verification ---
     if (esewaData) {
-      console.log("✅ eSewa data found, decoding...");
       try {
-        const decoded = JSON.parse(atob(esewaData));
-        console.log("✅ Decoded:", decoded);
+        // URL-decode first, then base64 decode
+        const urlDecoded = decodeURIComponent(esewaData);
+        const decoded = JSON.parse(atob(urlDecoded));
+        console.log("✅ Decoded eSewa data:", decoded);
 
         const paymentOrderId = decoded.transaction_uuid;
 
@@ -48,27 +44,21 @@ const PaymentSuccess = () => {
             },
           )
           .then(({ data }) => {
-            console.log("✅ Verify response:", data);
             if (data.success) {
               setStatus("success");
-              setMessage(
-                "Transaction ID: " + (decoded.transaction_code || "N/A"),
-              );
+              setMessage("Transaction ID: " + (decoded.transaction_code || "N/A"));
             } else {
               setStatus("failed");
               setMessage(data.message || "Verification failed");
             }
           })
           .catch((err) => {
-            console.error(
-              "❌ Verify error:",
-              err.response?.data || err.message,
-            );
+            console.error("❌ Verify error:", err.response?.data || err.message);
             setStatus("failed");
             setMessage(err.response?.data?.error || err.message);
           });
       } catch (e) {
-        console.log("❌ Decode failed:", e.message);
+        console.error("❌ Decode failed:", e.message);
         setStatus("failed");
         setMessage("Failed to decode eSewa response: " + e.message);
       }
@@ -97,9 +87,7 @@ const PaymentSuccess = () => {
         .then(({ data }) => {
           if (data.success) {
             setStatus("success");
-            setMessage(
-              "Transaction ID: " + (data.khaltiData?.transaction_id || "N/A"),
-            );
+            setMessage("Transaction ID: " + (data.khaltiData?.transaction_id || "N/A"));
           } else {
             setStatus("failed");
             setMessage(data.message || "Verification failed");
@@ -115,8 +103,6 @@ const PaymentSuccess = () => {
     const orderId = searchParams.get("orderId");
 
     if (orderId) {
-      console.log("✅ Found orderId:", orderId);
-
       axios
         .get(`${API_URL}/api/payment/status/${orderId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
@@ -134,12 +120,9 @@ const PaymentSuccess = () => {
           setStatus("failed");
           setMessage(err.response?.data?.error || err.message);
         });
-
-      return; 
+      return;
     }
 
-
-    console.log("❌ No payment data found in URL!");
     setStatus("failed");
     setMessage("No payment data found.");
   }, []);
@@ -159,10 +142,7 @@ const PaymentSuccess = () => {
             Payment Successful!
           </Typography>
           <Typography color="text.secondary">{message}</Typography>
-          <Button
-            variant="contained"
-            onClick={() => navigate("/account/orders")}
-          >
+          <Button variant="contained" onClick={() => navigate("/account/orders")}>
             View My Orders
           </Button>
         </>
